@@ -14,7 +14,7 @@ var postmask = require('postmask');
 
 postmask
     .processSource(template, path, options)
-    .then(ast => {}, error => {});
+    .then(optimizedTemplate => {}, error => {});
 
 OptionsExample = {
     plugins: [ "postmask-babel" ],
