@@ -55,6 +55,10 @@ function prepair (path, options) {
 		require(name);
 	});
 
+	for (var key in options.configs) {
+		mask.cfg(key, options.configs[key]);
+	}
+
 	return {
 		settings: {
 			from: uri.toLocalFile(),

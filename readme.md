@@ -18,7 +18,12 @@ postmask
 
 OptionsExample = {
     plugins: [ "postmask-babel" ],
-    minify: false
+    minify: false,
+    configs: {
+        'postmask-babel': {
+            presets: ['es2015', 'stage-1']
+        }
+    }
 };
 ```
 
