@@ -2,7 +2,7 @@ module.exports = {
 	suites: {
 		node: {
 			exec: 'node',
-			tests: 'node.test'
+			tests: 'test/node.test'
 		}
 	}
 };
