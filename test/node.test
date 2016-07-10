@@ -1,0 +1,22 @@
+UTest({	
+	'should change the tag name of a node': function(done){
+
+		var postmask = require('../');
+		var mask = require('maskjs');
+
+		mask.registerOptimizer('opt', (node, next) => {
+			node.tagName = 'div';
+			next();
+		});
+
+		var template = `
+			opt > span;
+		`;
+		postmask
+			.processSource(template, null, { plugins: [], minify: true })
+			.then(template => {
+				eq_(template, 'div>span;')
+				done();
+			});		
+	}
+});
