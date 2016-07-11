@@ -52,7 +52,10 @@ function prepair (path, options) {
 		if (name[0] === '.' || name[0] === '/') {
 			name = require('path').join(process.cwd(), name);
 		}
-		require(name);
+		var factory = require(name);
+		if (typeof factory === 'function') {
+			factory(mask);
+		}
 	});
 
 	for (var key in options.configs) {
