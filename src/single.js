@@ -35,10 +35,10 @@ function prepair (path, options) {
 	if (mask == null) {
 		mask = require('maskjs');
 		mask.on('error', function(error) {
-			console.error(error);
+			console.error(error.message);
 		});
-		mask.on('warn', function(msg) {
-			console.warn(msg);
+		mask.on('warn', function(error) {
+			console.warn(error.message);
 		});
 	}
 	
