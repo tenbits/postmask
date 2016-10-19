@@ -1,13 +1,13 @@
 {
   "name": "postmask",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Mask optimizers runner",
   "author": "Alexander Kit (alex.kit@atmajs.com)",
   "main": "src/index.js",
   "license": "MIT",
   "dependencies": {
     "atma-utils": "^0.1.6",
-    "maskjs": "^0.56.1"
+    "maskjs": ">=0.57.8"
   },
   "devDependencies": {
     "atma": "latest"
