@@ -6,10 +6,13 @@
   "main": "src/index.js",
   "license": "MIT",
   "dependencies": {
-    "atma-utils": "^0.1.6",
+    "atma-utils": "^0.1.13"
+  },
+  "peerDependencies": {
     "maskjs": ">=0.57.8"
   },
   "devDependencies": {
+    "@types/node": "^8.0.47",
     "atma": "latest"
   }
 }
