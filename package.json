@@ -3,16 +3,70 @@
   "version": "1.0.11",
   "description": "Mask optimizers runner",
   "author": "Alexander Kit (alex.kit@atmajs.com)",
-  "main": "src/index.js",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "license": "MIT",
   "dependencies": {
-    "atma-utils": "^0.1.13"
+    "atma-utils": "^0.1.13",
+    "maskjs": "^0.64.23"
   },
   "peerDependencies": {
     "maskjs": ">=0.57.8"
   },
   "devDependencies": {
     "@types/node": "^8.0.47",
-    "atma": "latest"
+    "app-bundler": "0.0.37",
+    "atma": "latest",
+    "atma-loader-ts": "^1.0.0",
+    "dts-bundle": "^0.7.3"
+  },
+  "scripts": {
+    "build": "app-bundler && npm run build-types",
+    "watch": "app-bundler -watch",
+    "build-types": "tsc -p . & atma custom tools/build-dts"
+  },
+  "app-bundler": {
+    "file": "src/index.ts",
+    "outputMain": "lib/index.js",
+    "package": {
+      "module": "commonjs",
+      "commonjs": {
+        "output": "simplified"
+      }
+    },
+    "dynamicDependencies": [
+      "maskjs",
+      "atma-utils",
+      "atma-io",
+      "path"
+    ],
+    "defaultExtensions": {
+      "js": "ts"
+    },
+    "middlewares": {
+      "js": [],
+      "ts": [
+        "atma-loader-ts:read"
+      ]
+    }
+  },
+  "atma": {
+    "settings": {
+      "atma-loader-ts": {
+        "extensions": [
+          "ts",
+          "test"
+        ],
+        "typescript": {
+          "compilerOptions": {
+            "module": "CommonJS",
+            "sourceMap": false
+          }
+        }
+      }
+    },
+    "plugins": [
+      "atma-loader-ts"
+    ]
   }
 }

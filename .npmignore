@@ -1,4 +1,5 @@
 .npmignore
 .travis
 test/
+ts-temp/
 *.komodoproject

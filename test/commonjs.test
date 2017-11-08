@@ -1,0 +1,7 @@
+let postmask = require('../lib/index.js');
+
+UTest({
+    'has Optimizer' () {
+        is_(postmask.optimizeAsync, 'Function');
+    }
+})
