@@ -89,7 +89,7 @@ export class OptimizerCtor {
             , (node, next) => {
                 var fns = this.getOptimizers(node.tagName);
                 if (fns != null) {
-                    this.processOptimizers(root, ctx, fns).then(next);
+                    this.processOptimizers(node, ctx, fns).then(next);
                     return;
                 }
                 next();

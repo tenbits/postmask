@@ -1,6 +1,6 @@
 {
   "name": "postmask",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Mask optimizers runner",
   "author": "Alexander Kit (alex.kit@atmajs.com)",
   "main": "./lib/index.js",
