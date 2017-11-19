@@ -1,5 +1,9 @@
+import * as Postmask from '../src/index'
 
 UTest({	
+	$teardown () {
+		Postmask.removeOptimizer();
+	},
 	'should change the tag name of a node' () {
 
 		Postmask.registerOptimizer('opt', (node, ctx, next) => {
@@ -23,7 +27,27 @@ UTest({
 		return Postmask
 			.optimizeAsync(template, null, { plugins: [], minify: true })
 			.then(obj => {
-				logger.log(obj);				
+				eq_(obj.report.errors.length, 1);
 			});		
+	},
+	'should handle full source' () {
+		Postmask.registerOptimizer('*:after', (root, ctx, next) => {
+			mask.j(root).find('section').tag('span');
+			next();
+		});
+		Postmask.registerOptimizer('*:before', (root, ctx, next) => {
+			mask.j(root).find('div').tag('section');
+			next();
+		});
+		const template = `
+			body {
+				div;
+			}
+		`;
+		return Postmask
+			.optimizeAsync(template, null, { plugins: [], minify: true })
+			.then(obj => {
+				eq_(obj.result, 'body>span;')
+			});
 	}
 });

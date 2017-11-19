@@ -1,11 +1,17 @@
+import optimizer, { OptimizerCtor } from './single/Optimizer';
 import { class_Uri } from 'atma-utils'
-import { mask } from './global'
+import { mask, io } from './global'
 import { IOptions } from './options'
-import * as pathUtils from 'path'
+import * as pathUtils from 'path';
 
 let lastConfiguration = null;
 let lastOptions = null;
-let plugins = [];
+let plugins: IPlugin[] = [];
+
+export interface IPlugin {
+    initialize (optimizer: OptimizerCtor, settings: any, mask: any, io: any): void
+    configurate? (config: any): void     
+}
 
 export function prepare (path: string, options: IOptions) {
     if (lastOptions === options) {
@@ -20,19 +26,12 @@ export function prepare (path: string, options: IOptions) {
 
     options.plugins.map(function(name){
         if (name[0] === '.' || name[0] === '/') {
-            name = pathUtils.join(process.cwd(), name);
+            name = pathUtils.join(base, name);
         }
-        let factory = require(name);
-        if (typeof factory === 'function') {
-            plugins.push(factory(mask));
-        } else {
-            plugins.push(factory);
-        }
+        let plugin: IPlugin = require(name);
+        plugin.initialize(optimizer, options.settings && options.settings[name], mask, io);
+        plugins.push(plugin);        
     });
-
-    for (var key in options.configs) {
-        mask.cfg(key, options.configs[key]);
-    }
 
     configurate(lastConfiguration);
 }

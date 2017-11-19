@@ -1,6 +1,6 @@
 {
   "name": "postmask",
-  "version": "1.0.11",
+  "version": "1.1.1",
   "description": "Mask optimizers runner",
   "author": "Alexander Kit (alex.kit@atmajs.com)",
   "main": "./lib/index.js",
@@ -52,6 +52,12 @@
   },
   "atma": {
     "settings": {
+      "include": {
+        "amd": true,
+        "extentionDefault": {
+          "js": "ts"
+        }
+      },
       "atma-loader-ts": {
         "extensions": [
           "ts",
@@ -60,6 +66,9 @@
         "typescript": {
           "compilerOptions": {
             "module": "CommonJS",
+            "#if TEST": {
+              "module": "AMD"
+            },
             "sourceMap": false
           }
         }
