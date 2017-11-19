@@ -3,7 +3,7 @@
 declare module 'postmask' {
     import { Result } from 'postmask/Result';
     import { IOptions, IGlobalOptions } from 'postmask/options';
-    import { IOptimizer } from 'postmask/single/optimizer';
+    import { IOptimizer } from 'postmask/single/Optimizer';
     export { Result, IOptimizer };
     export function optimizeAsync(source: string, path: string, options?: IOptions): Promise<Result>;
     export function registerOptimizer(pattern: string, fn: IOptimizer): void;
@@ -50,38 +50,36 @@ declare module 'postmask/options' {
     export function prepare(options: any): IOptions;
 }
 
-declare module 'postmask/single/optimizer' {
-    import { Report, Result } from 'postmask/Result';
-    import { IOptions } from 'postmask/options';
-    export interface IContext {
-        report: Report;
-    }
-    export interface IOptimizer {
-        (node: any, ctx: IContext, next: INext): any;
-    }
-    export interface INext {
-        (node?: any): any;
-    }
-    export interface IOptimizerCollection {
-        name: string;
-        fns: IOptimizer[];
-        priorities: string[];
-    }
-    export class OptimizerCtor {
-        optimizers: {
-            [name: string]: IOptimizerCollection;
-        };
-        optimizeAsync(source: string, path: string, opts?: IOptions): Promise<Result>;
-        /**
-          *
-          * @param pattern eg. 'style';`*` ~ `*:before`, `*:after`
-          * @param fn
-          */
-        registerOptimizer(pattern: string, fn: IOptimizer): void;
-        removeOptimizer(): void;
-        getOptimizers(name: any): IOptimizer[];
-    }
-    const _default: OptimizerCtor;
-    export default _default;
+import { Report, Result } from 'postmask/Result';
+import { IOptions } from 'postmask/options';
+export interface IContext {
+    report: Report;
 }
+export interface IOptimizer {
+    (node: any, ctx: IContext, next: INext): any;
+}
+export interface INext {
+    (node?: any): any;
+}
+export interface IOptimizerCollection {
+    name: string;
+    fns: IOptimizer[];
+    priorities: string[];
+}
+export declare class OptimizerCtor {
+    optimizers: {
+        [name: string]: IOptimizerCollection;
+    };
+    optimizeAsync(source: string, path: string, opts?: IOptions): Promise<Result>;
+    /**
+      *
+      * @param pattern eg. 'style';`*` ~ `*:before`, `*:after`
+      * @param fn
+      */
+    registerOptimizer(pattern: string, fn: IOptimizer): void;
+    removeOptimizer(): void;
+    getOptimizers(name: any): IOptimizer[];
+}
+declare const _default: OptimizerCtor;
+export default _default;
 

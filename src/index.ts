@@ -3,7 +3,7 @@ import { IOptions, IGlobalOptions } from './options';
 import Single from './single/index'
 import { configurate as configuratePlugins } from './plugins'
 import { setMask, setIo } from './global'
-import Optimizer, { IOptimizer } from './single/optimizer'
+import Optimizer, { IOptimizer } from './single/Optimizer'
 
 export { 
 	Result,
