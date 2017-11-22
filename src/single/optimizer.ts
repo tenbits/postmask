@@ -8,6 +8,7 @@ import { prepare as preparePlugins } from '../plugins'
 
 export interface IContext {
     report: Report
+    filename: string
 }
 
 export interface IOptimizer {
@@ -35,9 +36,11 @@ export class OptimizerCtor {
         let result = parse(source, path);
         let root = result.result;
         let optimizerResult = new Result();
-        let ctx = { report: result.report };
-        
-    
+        let ctx = { 
+            report: result.report,
+            filename: path
+        };
+
         root = await this.processOptimizers(root, ctx, this.getOptimizers('*:before')) || root;
         root = await this.processTags(root, ctx) || root;
         root = await this.processOptimizers(root, ctx, this.getOptimizers('*:after')) || root; 

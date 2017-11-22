@@ -54,6 +54,7 @@ import { Report, Result } from 'postmask/Result';
 import { IOptions } from 'postmask/options';
 export interface IContext {
     report: Report;
+    filename: string;
 }
 export interface IOptimizer {
     (node: any, ctx: IContext, next: INext): any;
