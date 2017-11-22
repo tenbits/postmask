@@ -22,7 +22,8 @@ declare module 'postmask/Result' {
         line?: number;
         col?: number;
         source?: string;
-        level: 'error' | 'warning' | 'info';
+        filename?: string;
+        level: 'error' | 'warn' | 'info';
         middleware?: string;
     }
     export class Result<T = string> {
@@ -52,12 +53,9 @@ declare module 'postmask/options' {
 
 import { Report, Result } from 'postmask/Result';
 import { IOptions } from 'postmask/options';
-export interface IContext {
-    report: Report;
-    filename: string;
-}
 export interface IOptimizer {
-    (node: any, ctx: IContext, next: INext): any;
+    (node: any, ctx: OptimizerCtx, next: INext): any;
+    middleware: string;
 }
 export interface INext {
     (node?: any): any;
@@ -66,6 +64,16 @@ export interface IOptimizerCollection {
     name: string;
     fns: IOptimizer[];
     priorities: string[];
+}
+export declare class OptimizerCtx {
+    report: Report;
+    filename: string;
+    source: string;
+    middleware: string;
+    constructor(report: Report, filename: string, source: string);
+    error(text: string, node?: any): void;
+    info(text: string, node?: any): void;
+    warn(text: string, node?: any): void;
 }
 export declare class OptimizerCtor {
     optimizers: {
@@ -77,7 +85,7 @@ export declare class OptimizerCtor {
       * @param pattern eg. 'style';`*` ~ `*:before`, `*:after`
       * @param fn
       */
-    registerOptimizer(pattern: string, fn: IOptimizer): void;
+    registerOptimizer(pattern: string, fn: IOptimizer, middleware?: string): void;
     removeOptimizer(): void;
     getOptimizers(name: any): IOptimizer[];
 }

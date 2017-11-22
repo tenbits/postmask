@@ -9,7 +9,8 @@ export class Message {
     line?: number
     col?: number
     source?: string
-    level: 'error' | 'warning' | 'info'
+    filename?: string
+    level: 'error' | 'warn' | 'info'
     middleware?: string
 }
 

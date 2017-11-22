@@ -1,18 +1,15 @@
+import Optimizer from './Optimizer';
 import { parse } from '../parser'
-import { Report, Result } from '../Result'
+import { Message, Report, Result } from '../Result';
 import { IOptions, prepare as prepareOptions  } from '../options'
 import { mask } from '../global'
 import { class_Dfr } from 'atma-utils'
 import { prepare as preparePlugins } from '../plugins'
 
 
-export interface IContext {
-    report: Report
-    filename: string
-}
-
 export interface IOptimizer {
-    (node: any, ctx: IContext, next: INext)
+    (node: any, ctx: OptimizerCtx, next: INext)
+    middleware: string
 }
 export interface INext {
     (node?: any)
@@ -22,6 +19,45 @@ export interface IOptimizerCollection {
     name: string
     fns: IOptimizer[]
     priorities: string[]
+}
+
+export class OptimizerCtx {
+    public middleware: string
+    constructor(public report: Report, public filename: string, public source: string) {
+
+    }
+    error (text: string, node?) {
+        this.write(text, node, 'error');
+    }
+    info (text: string, node?) {
+        this.write(text, node, 'info');
+    }
+    warn (text: string, node?) {
+        this.write(text, node, 'warn');
+    }
+    private write(text: string, node = null, level: 'error' | 'warn' | 'info') {
+        let message = new Message;
+        message.message = text;
+        message.source = this.source;
+        message.filename = this.filename;
+        message.middleware = this.middleware
+        message.level = level;
+        if (node && node.sourceIndex) {
+            let before = this.source.substring(0, node.sourceIndex);
+            let lines = before.split(/\r?\n/g);
+            message.line = lines.length;
+            message.col = lines[lines.length - 1].length;
+        }
+        
+        switch (level) {
+            case 'error':
+                this.report.errors.push(message)
+                break;
+            case 'warn':
+                this.report.warnings.push(message)
+                break;            
+        }
+    }
 }
 
 
@@ -36,10 +72,7 @@ export class OptimizerCtor {
         let result = parse(source, path);
         let root = result.result;
         let optimizerResult = new Result();
-        let ctx = { 
-            report: result.report,
-            filename: path
-        };
+        let ctx = new OptimizerCtx(result.report, path, source);
 
         root = await this.processOptimizers(root, ctx, this.getOptimizers('*:before')) || root;
         root = await this.processTags(root, ctx) || root;
@@ -59,19 +92,14 @@ export class OptimizerCtor {
      * @param pattern eg. 'style';`*` ~ `*:before`, `*:after`
      * @param fn 
      */
-    public registerOptimizer (pattern: string, fn: IOptimizer) {
-        // let rgx = /^([^:]+)(:(.+))?$/;
-        // let match = rgx.exec(pattern);
-        // let name = match[1];
-        // let priorety = match[3] || 'after';
+    public registerOptimizer (pattern: string, fn: IOptimizer, middleware?: string) {
         let name = pattern;
-        //let priorety = 'queue';
         let optimizers = this.optimizers[name];
         if (optimizers == null) {
             optimizers = { name, fns: [], priorities: [] };
             this.optimizers[name] = optimizers;
         }
-        //optimizers.priorities.push(priorety);
+        fn.middleware = middleware;    
         optimizers.fns.push(fn);
     }
     public removeOptimizer () {
@@ -85,7 +113,7 @@ export class OptimizerCtor {
         return optimizers.fns;
     }
 
-    private processTags (root, ctx: IContext): Promise<any> {
+    private processTags (root, ctx: OptimizerCtx): Promise<any> {
         let dfr = new class_Dfr();
         mask.TreeWalker.walkAsync(
             root
@@ -103,7 +131,7 @@ export class OptimizerCtor {
         );
         return dfr as any;
     } 
-    private processOptimizers(node, ctx: IContext, fns: IOptimizer[]): Promise<any> {
+    private processOptimizers(node, ctx: OptimizerCtx, fns: IOptimizer[]): Promise<any> {
         let dfr = new class_Dfr();
         if (fns == null || fns.length === 0) {
             dfr.resolve();
@@ -119,6 +147,7 @@ export class OptimizerCtor {
             }
     
             let fn = fns[i];        
+            ctx.middleware = fn.middleware;
             fn(node, ctx, function ($result) {
                 result = $result;
                 process();
