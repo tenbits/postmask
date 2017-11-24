@@ -2,7 +2,7 @@ export interface IOptions {
     minify?: boolean
     base?: string
     plugins?: string[]
-    settings?: {
+    configs?: {
         [key: string]: any
     },
     [key: string]: any

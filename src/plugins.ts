@@ -9,7 +9,7 @@ let lastOptions = null;
 let plugins: IPlugin[] = [];
 
 export interface IPlugin {
-    initialize (optimizer: OptimizerCtor, settings: any, mask: any, io: any): void
+    initialize (optimizer: OptimizerCtor, config: any, mask: any, io: any): void
     configurate? (config: any): void     
 }
 
@@ -29,7 +29,11 @@ export function prepare (path: string, options: IOptions) {
             name = pathUtils.join(base, name);
         }
         let plugin: IPlugin = require(name);
-        plugin.initialize(optimizer, options.settings && options.settings[name], mask, io);
+        let config = options.configs && options.configs[name];
+        if (config) {
+            mask.cfg(name, config);            
+        }
+        plugin.initialize(optimizer, config, mask, io);
         plugins.push(plugin);        
     });
 
